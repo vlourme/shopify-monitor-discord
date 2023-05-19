@@ -20,10 +20,11 @@ def generate_product_embed(
     embed.add_field(name="Type", value=product["type"])
 
     for variant in product["variants"]:
+        if variant["available"] == 0:
+            continue
+
         if variant["available"] == 1:
             available = "Yes"
-        elif variant["available"] == 0:
-            available = "No"
         else:
             available = "N/A"
 
