@@ -144,11 +144,8 @@ async def register_search(ctx: lightbulb.Context) -> None:
 
 
 if __name__ == "__main__":
-    try:
-        bot.run(
-            activity=hikari.Activity(
-                name="Shopify websites!", type=hikari.ActivityType.WATCHING
-            )
+    bot.run(
+        activity=hikari.Activity(
+            name="Shopify websites!", type=hikari.ActivityType.WATCHING
         )
-    except KeyboardInterrupt:
-        bot.close()
+    )
