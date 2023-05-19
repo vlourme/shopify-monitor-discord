@@ -32,6 +32,7 @@ class Shopify:
                 "url": urljoin(url, "/products/" + product["handle"]),
                 "brand": product["vendor"],
                 "type": product["product_type"],
+                "price": product.get("variants", [])[0].get("price", "N/A"),
                 "variants": [
                     {
                         "id": variant["id"],
@@ -67,28 +68,29 @@ class Shopify:
         Get product information
         """
         url = Shopify.format_url(url)
-        url = urljoin(url, "product.json")
+        url = url.rstrip("/") + ".js"
 
-        product = get(url).json()["product"]
+        product = get(url).json()
 
         return {
             "id": product["id"],
             "title": product["title"],
             "url": urljoin(url, "/products/" + product["handle"]),
             "brand": product["vendor"],
-            "type": product["product_type"],
+            "price": product["price"] / 100 or "N/A",
+            "type": product["type"],
             "variants": [
                 {
                     "id": variant["id"],
                     "title": variant["title"],
-                    "price": variant["price"],
+                    "price": variant["price"] / 100 or "N/A",
                     "available": Shopify.get_available_status(
                         variant.get("available", "N/A")
                     ),
                 }
                 for variant in product.get("variants", [])
             ],
-            "image": product["images"][0]["src"] or "",
+            "image": product["media"][0]["src"] or "",
         }
 
     @staticmethod
