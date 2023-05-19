@@ -144,6 +144,11 @@ async def register_search(ctx: lightbulb.Context) -> None:
 
 
 if __name__ == "__main__":
+    if os.name != "nt":
+        import uvloop
+
+        uvloop.install()
+
     bot.run(
         activity=hikari.Activity(
             name="Shopify websites!", type=hikari.ActivityType.WATCHING
