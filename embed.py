@@ -1,5 +1,5 @@
 from hikari import Embed, Color
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 
 
 def generate_product_embed(
@@ -11,28 +11,26 @@ def generate_product_embed(
     embed.set_author(
         name=url.hostname,
         url=monitor["url"],
-        icon="https://www.google.com/s2/favicons?domain={}&size=256".format(
-            url.hostname
+        icon="https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url={}&size=256".format(
+            urljoin(monitor["url"], "/")
         ),
     )
     embed.set_image(product["image"])
-    embed.add_field(name="Brand", value=product["brand"])
-    embed.add_field(name="Type", value=product["type"])
+    embed.add_field(name="Brand", value=product["brand"], inline=True)
+    embed.add_field(name="Type", value=product["type"], inline=True)
+    embed.add_field(name="Price", value=product["price"], inline=True)
 
-    for variant in product["variants"]:
-        if variant["available"] == 0:
-            continue
+    variants = [
+        variant["title"] if variant["available"] == 1 else "*" + variant["title"] + "*"
+        for variant in product["variants"]
+        if variant["available"] != 0
+    ]
 
-        if variant["available"] == 1:
-            available = "Yes"
-        else:
-            available = "N/A"
-
-        embed.add_field(
-            name="__{}__".format(variant["title"]),
-            value=f"Price: **{variant['price']}**\nAvailable: **{available}**",
-            inline=True,
-        )
+    embed.add_field(
+        name="Available variants",
+        value=", ".join(variants) if len(variants) > 0 else "None",
+        inline=True,
+    )
 
     if type == "new":
         embed.color = Color(0xA1C181)
