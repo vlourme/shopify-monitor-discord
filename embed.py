@@ -8,7 +8,13 @@ def generate_product_embed(
     url = urlparse(monitor["url"])
 
     embed = Embed(title=product["title"], url=product["url"])
-    embed.set_author(name=url.hostname, url=monitor["url"])
+    embed.set_author(
+        name=url.hostname,
+        url=monitor["url"],
+        icon="https://www.google.com/s2/favicons?domain={}&size=256".format(
+            url.hostname
+        ),
+    )
     embed.set_image(product["image"])
     embed.add_field(name="Brand", value=product["brand"])
     embed.add_field(name="Type", value=product["type"])
