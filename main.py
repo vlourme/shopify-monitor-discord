@@ -144,11 +144,6 @@ async def register_search(ctx: lightbulb.Context) -> None:
 
 
 if __name__ == "__main__":
-    if os.name != "nt":
-        import uvloop
-
-        uvloop.install()
-
     try:
         bot.run(
             activity=hikari.Activity(
