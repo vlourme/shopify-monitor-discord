@@ -51,17 +51,25 @@ async def ready_listener(_):
 
 
 @bot.command()
-@lightbulb.option(
-    "channel", "Channel to receive alerts", type=hikari.TextableChannel, required=True
-)
-@lightbulb.option(
-    "url", "URL to the product or the collection", type=str, required=True
-)
-@lightbulb.command(
-    "register_monitor", "Enable monitoring for a product or a collection"
-)
-@lightbulb.implements(lightbulb.SlashCommand)
-async def register_monitor(ctx: lightbulb.Context) -> None:
+@lightbulb.command("monitors", "Manage monitors")
+@lightbulb.implements(lightbulb.SlashCommandGroup)
+async def monitors() -> None:
+    pass
+
+
+@monitors.child
+@lightbulb.command("add", "Add a monitor")
+@lightbulb.implements(lightbulb.SlashSubGroup)
+async def add() -> None:
+    pass
+
+
+@add.child
+@lightbulb.option("channel", "Channel", type=hikari.TextableChannel, required=True)
+@lightbulb.option("url", "Collection URL", type=str, required=True)
+@lightbulb.command("collection", "Enable monitoring for a collection")
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def register_collection(ctx: lightbulb.Context) -> None:
     if not ctx.options.url.startswith(("https://", "http://")):
         await ctx.respond("❌ Invalid URL")
         return
@@ -77,6 +85,19 @@ async def register_monitor(ctx: lightbulb.Context) -> None:
         await ctx.respond("✅ Registered collection monitoring!")
         return
 
+    await ctx.respond("❌ The URL is invalid, it should contains /collections/.")
+
+
+@add.child
+@lightbulb.option("channel", "Channel", type=hikari.TextableChannel, required=True)
+@lightbulb.option("url", "Product URL", type=str, required=True)
+@lightbulb.command("product", "Enable monitoring for a product")
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def register_product(ctx: lightbulb.Context) -> None:
+    if not ctx.options.url.startswith(("https://", "http://")):
+        await ctx.respond("❌ Invalid URL")
+        return
+
     if Shopify.is_product(ctx.options.url):
         ctx.bot.d.monitors.insert(
             {
@@ -88,20 +109,16 @@ async def register_monitor(ctx: lightbulb.Context) -> None:
         await ctx.respond("✅ Registered product monitoring!")
         return
 
-    await ctx.respond(
-        "❌ The URL is invalid, it should contains /products/ or /collections/."
-    )
+    await ctx.respond("❌ The URL is invalid, it should contains /products/.")
 
 
-@bot.command()
-@lightbulb.option(
-    "channel", "Channel to receive alerts", type=hikari.TextableChannel, required=True
-)
+@add.child
+@lightbulb.option("channel", "Channel", type=hikari.TextableChannel, required=True)
 @lightbulb.option("query", "Searched product name", type=str, required=True)
 @lightbulb.option("url", "Website base URL", type=str, required=True)
-@lightbulb.command("register_search", "Enable monitoring for a search query")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def register_search(ctx: lightbulb.Context) -> None:
+@lightbulb.command("search", "Enable monitoring for a search query")
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def search(ctx: lightbulb.Context) -> None:
     if not ctx.options.url.startswith(("https://", "http://")):
         await ctx.respond("❌ Invalid URL")
         return
@@ -121,26 +138,42 @@ async def register_search(ctx: lightbulb.Context) -> None:
     await ctx.respond("✅ Registered search monitoring!")
 
 
-# @bot.command()
-# @lightbulb.command("subscriptions", "Get a list of subscription")
-# @lightbulb.implements(lightbulb.SlashCommand)
-# async def subscriptions(ctx: lightbulb.Context) -> None:
-#     embed = hikari.Embed(title="Subscriptions")
+@monitors.child
+@lightbulb.option("channel", "Channel", type=hikari.TextableChannel, required=True)
+@lightbulb.command("collections", "List collections")
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def list(ctx: lightbulb.Context):
+    monitors = bot.d.monitors.find(channel_id=ctx.options.channel.id)
 
-#     for sub in table:
-#         embed.add_field(name="#" + str(sub["id"]), value=sub["url"])
+    if not monitors:
+        await ctx.respond("❌ No monitors found")
+        return
 
-#     await ctx.respond(embed)
+    for monitor in monitors:
+        embed = hikari.Embed()
+        embed.title = "Monitor #{}".format(monitor["id"])
+        embed.add_field("URL", monitor["url"], inline=True)
+        embed.add_field("Type", str(monitor["type"]).capitalize(), inline=True)
+
+        variants_count = bot.d.variants.count(monitor_id=monitor["id"])
+        embed.add_field("Variants found", variants_count, inline=True)
+        await ctx.respond(embed=embed)
 
 
-# @bot.command()
-# @lightbulb.option("id", "ID of the subscription", type=int, required=True)
-# @lightbulb.command("unsubscribe", "Stop following a subscription")
-# @lightbulb.implements(lightbulb.SlashCommand)
-# async def unsubscribe(ctx: lightbulb.Context) -> None:
-#     table.delete(id=ctx.options.id)
-#     info("Deleted subscription #{id}", id=str(ctx.options.id))
-#     await ctx.respond(f"🗑 Deleted subscription #{str(ctx.options.id)}.")
+@monitors.child
+@lightbulb.option("channel", "Channel", type=hikari.TextableChannel, required=True)
+@lightbulb.option("id", "Monitor ID", type=int, required=True)
+@lightbulb.command("remove", "Remove a monitor")
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def remove(ctx: lightbulb.Context):
+    monitor = bot.d.monitors.find_one(id=ctx.options.id)
+
+    if not monitor:
+        await ctx.respond("❌ Monitor not found")
+        return
+
+    bot.d.monitors.delete(id=ctx.options.id)
+    await ctx.respond("✅ Monitor removed")
 
 
 if __name__ == "__main__":
