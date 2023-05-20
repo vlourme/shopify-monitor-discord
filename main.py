@@ -161,7 +161,6 @@ async def list(ctx: lightbulb.Context):
 
 
 @monitors.child
-@lightbulb.option("channel", "Channel", type=hikari.TextableChannel, required=True)
 @lightbulb.option("id", "Monitor ID", type=int, required=True)
 @lightbulb.command("remove", "Remove a monitor")
 @lightbulb.implements(lightbulb.SlashSubCommand)
