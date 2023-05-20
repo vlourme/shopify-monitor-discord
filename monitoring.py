@@ -2,6 +2,7 @@ from lightbulb import BotApp
 from shopify import Shopify
 from logging import info
 from embed import generate_product_embed
+from datetime import datetime
 
 
 async def check_product(bot: BotApp, monitor: dict, product: dict, provider: str):
@@ -21,6 +22,8 @@ async def check_product(bot: BotApp, monitor: dict, product: dict, provider: str
                     "variant_id": variant["id"],
                     "available": variant["available"],
                     "price": variant["price"],
+                    "created_at": datetime.now().timestamp(),
+                    "updated_at": datetime.now().timestamp(),
                 }
             )
 
@@ -37,6 +40,7 @@ async def check_product(bot: BotApp, monitor: dict, product: dict, provider: str
                     "variant_id": variant["id"],
                     "available": variant["available"],
                     "price": variant["price"],
+                    "updated_at": datetime.now().timestamp(),
                 },
                 ["monitor_id", "product_id", "variant_id"],
             )
