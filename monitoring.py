@@ -6,6 +6,7 @@ from datetime import datetime
 
 
 async def check_product(bot: BotApp, monitor: dict, product: dict, provider: str):
+    type = "new"
     announce = False
 
     for variant in product["variants"]:
@@ -27,11 +28,11 @@ async def check_product(bot: BotApp, monitor: dict, product: dict, provider: str
                 }
             )
 
+            type = "new"
             announce = True
-        elif (
-            saved_variant["available"] != variant["available"]
-            or saved_variant["price"] != variant["price"]
-        ):
+        elif bool(saved_variant["available"]) != bool(variant["available"]) or float(
+            saved_variant["price"]
+        ) != float(variant["price"]):
             info("Changes detected for variant {id}".format(id=variant["id"]))
             bot.d.variants.update(
                 {
@@ -45,12 +46,13 @@ async def check_product(bot: BotApp, monitor: dict, product: dict, provider: str
                 ["monitor_id", "product_id", "variant_id"],
             )
 
+            type = "update"
             announce = True
         else:
             info("No changes detected for variant {id}".format(id=variant["id"]))
 
     if announce:
-        embed = generate_product_embed(monitor, product, type="new", provider=provider)
+        embed = generate_product_embed(monitor, product, type=type, provider=provider)
         await bot.rest.create_message(monitor["channel_id"], embed=embed)
 
 
