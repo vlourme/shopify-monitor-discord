@@ -180,7 +180,7 @@ async def refresh_currency(ctx: lightbulb.Context):
 
 @monitors.child
 @lightbulb.option("channel", "Channel", type=hikari.TextableChannel, required=True)
-@lightbulb.command("collections", "List collections")
+@lightbulb.command("list", "List monitors")
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def list(ctx: lightbulb.Context):
     monitors = bot.d.monitors.find(channel_id=ctx.options.channel.id)

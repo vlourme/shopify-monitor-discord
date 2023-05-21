@@ -14,6 +14,16 @@ You can make a donation using the button above, all of my Discord bot are open-s
 - Sends notifications to a specified Discord channel.
 - Fully configurable to track as many or as few products/search terms/collections as desired.
 
+## Bot commands
+
+```sh
+/monitors add search [url] [query] [channel]    # Monitor a search query
+/monitors add collection [url] [channel]        # Monitor a collection
+/monitors add product [url] [channel]           # Monitor a product
+/monitors list [channel]                        # List active monitors for a given channel
+/monitors remove [id]                           # Deactivate a monitor
+```
+
 ## Requirements
 
 - Python 3.9 or later
