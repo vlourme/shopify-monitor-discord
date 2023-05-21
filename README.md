@@ -1,6 +1,10 @@
 # Shopify Monitor for Discord
 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=X28NBS7XN2Q9C)
+
 Shopify Monitor for Discord is a Python-based project that allows users to track prices, availability changes, search results, and collections for any Shopify product. It provides low latency notifications to Discord channels, ensuring you never miss an important change.
+
+You can make a donation using the button above, all of my Discord bot are open-source and hopefully they'll always be. You can help me maintaining them by making a small donation.
 
 ## Features
 
