@@ -1,5 +1,6 @@
 from hikari import Embed, Color
 from urllib.parse import urlparse, urljoin
+from babel.numbers import format_currency
 
 
 def generate_product_embed(
@@ -18,7 +19,11 @@ def generate_product_embed(
     embed.set_image(product["image"])
     embed.add_field(name="Brand", value=product["brand"], inline=True)
     embed.add_field(name="Type", value=product["type"], inline=True)
-    embed.add_field(name="Price", value=product["price"], inline=True)
+    embed.add_field(
+        name="Price",
+        value=format_currency(product["price"], monitor["currency"], locale="en_US"),
+        inline=True,
+    )
 
     variants = [
         variant["title"] if variant["available"] == 1 else "*" + variant["title"] + "*"

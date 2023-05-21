@@ -1,5 +1,6 @@
 from urllib.parse import urlparse, urljoin
 from requests import get
+from typing import Dict
 
 
 class Shopify:
@@ -119,18 +120,18 @@ class Shopify:
         ]
 
     @staticmethod
-    def is_shopify(url: str) -> bool:
+    def get_shopify_config(url: str) -> Dict[str, str]:
         """
-        Check if the URL is a valid Shopify store
+        Get the Shopify configuration
         """
 
         try:
             url = urljoin(url, "/cart.js")
             content = get(url).json()
 
-            return content["token"] != None
+            return content
         except:
-            return False
+            return None
 
     @staticmethod
     def is_collection(url: str) -> bool:
