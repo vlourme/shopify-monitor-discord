@@ -1,6 +1,6 @@
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urljoin
 from requests import get
-from typing import Dict
+from typing import Dict, List
 
 
 class Shopify:
@@ -17,7 +17,7 @@ class Shopify:
         return url
 
     @staticmethod
-    def get_collection(url: str) -> list:
+    def get_collection(url: str) -> List[Dict[str, str]]:
         """
         Get collection's products
         """
@@ -64,7 +64,7 @@ class Shopify:
             return -1
 
     @staticmethod
-    def get_product(url: str) -> dict:
+    def get_product(url: str) -> Dict[str, str]:
         """
         Get product information
         """
@@ -95,7 +95,7 @@ class Shopify:
         }
 
     @staticmethod
-    def get_search_results(url: str, query: str) -> list:
+    def get_search_results(url: str, query: str) -> List[Dict[str, str]]:
         """
         Get search results
         """
@@ -149,7 +149,7 @@ class Shopify:
             return False
 
     @staticmethod
-    def is_product(url: str) -> None:
+    def is_product(url: str) -> bool:
         """
         Check if the URL is a valid product
         """
