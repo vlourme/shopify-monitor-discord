@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  shopify-monitor:
+    build: .
+    container_name: shopify-monitor-bot
+    restart: unless-stopped
+    environment:
+      - TOKEN=${TOKEN}
+      - INTERVAL=${INTERVAL:-180}
+    volumes:
+      - ./data:/app/data
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
